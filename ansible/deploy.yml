@@ -9,19 +9,21 @@
   tasks:
     - name: db container
       docker:
-        name: db
+        name: fountainheadstatus-db
         image: postgres
         state: started
+        restart_policy: always
     - name: web container
       docker:
-        name: web
+        name: fountainheadstatus-web
         image: dschep/fountainhead-status
         state: reloaded
+        restart_policy: always
         pull: always
         ports:
           - "{{ bind_port }}:5000"
         links:
-          - db
+          - fountainheadstatus-db:db
         env:
           DB_URL: postgresql+psycopg2://postgres@db/
           ACCOUNT_SID: "{{ lookup('env', 'ACCOUNT_SID') }}"

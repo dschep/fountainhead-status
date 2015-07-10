@@ -38,7 +38,7 @@
       template: src=update-status dest=/usr/bin/update-fountainheadstatus
                 mode=777
     - name: crontab to update status
-      cron: name="update Fountainhead status" minute="0" hour="*/6"
+      cron: name="update Fountainhead status" minute="0" hour="*/2"
             job="/usr/bin/update-fountainheadstatus"
   handlers:
     - name: restart nginx

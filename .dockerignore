@@ -1,0 +1,5 @@
+ansible
+__pycache__
+Dockerfile
+docker-compose.yml
+.git

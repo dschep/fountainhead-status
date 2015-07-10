@@ -35,7 +35,7 @@ class Call(db.Model):
     @property
     def status(self):
         if 'open' in self.transcript and 'close' in self.transcript:
-            if self.transcript.index('open') > self.transcript.index('open'):
+            if self.transcript.index('open') < self.transcript.index('open'):
                 return 'open'
             else:
                 return 'closed'

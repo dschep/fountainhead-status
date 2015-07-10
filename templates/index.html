@@ -12,6 +12,17 @@
    <audio src="{{ call.recording_url }}" controls=""></audio>
    <div class="date">Last updated: {{ call.date.astimezone(timezone).strftime('%m/%d/%Y %I:%M%p') }}</div>
    <p class="transcript">{{ call.transcript }}</p>
+   <p>
+    Hosting and running this isn't free. I'm using
+    <a href="http://twilio.com" target="_blank">Twilio</a> to call the hotline
+     and transcribe the message.
+   </p>
+   <p>So feel free to click this button and help run this service or
+    buy me a beer.</p>
+   <script data-gratipay-username="DanielSchep"
+     data-gratipay-widget="button"
+     src="//grtp.co/v1.js"></script>
+   </p>
   </div>
   <div class="footer">
    <a href="https://github.com/dschep/fh-status" target="_blank">

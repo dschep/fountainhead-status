@@ -1,0 +1,12 @@
+db:
+  image: postgres
+web:
+  build: .
+  command: gunicorn fountainheadstatus:app --bind=0:5000 --reload
+  volumes:
+    - .:/usr/src/app
+  ports:
+    - "5000:5000"
+  links:
+    - db
+  env_file: .env

@@ -1,0 +1,45 @@
+---
+- hosts: all
+  sudo: yes
+  roles:
+    - angstwad.docker_ubuntu
+  vars:
+    hostname: fountainhead-stat.us
+    bind_port: 5000
+  tasks:
+    - name: db container
+      docker:
+        name: db
+        image: postgres
+        state: started
+    - name: web container
+      docker:
+        name: web
+        image: dschep/fountainheadstatus
+        state: reloaded
+        pull: always
+        ports:
+          - "{{ bind_port }}:5000"
+        links:
+          - db
+        env:
+          DB_URL: postgresql+psycopg2://postgres@db/
+          ACCOUNT_SID: "{{ lookup('env', 'ACCOUNT_SID') }}"
+          AUTH_TOKEN: "{{ lookup('env', 'AUTH_TOKEN') }}"
+          FROM: "{{ lookup('env', 'FROM') }}"
+          SERVER_URL: "{{ lookup('env', 'SERVER_URL') }}"
+    - name: install nginx
+      apt: pkg=nginx state=present
+    - name: copy nginx site
+      template: src=nginx-site dest=/etc/nginx/sites-enabled/fountainheadstatus
+      notify:
+        - restart nginx
+    - name: create update script
+      template: src=update-status dest=/usr/bin/update-fountainheadstatus
+                mode=777
+    - name: crontab to update status
+      cron: name="update Fountainhead status" minute="0" hour="*/6"
+            job="/usr/bin/update-fountainheadstatus"
+  handlers:
+    - name: restart nginx
+      service: name=nginx state=restarted

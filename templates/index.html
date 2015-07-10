@@ -1,0 +1,26 @@
+ <!DOCTYPE html>
+<html>
+ <head>
+ <title>Fountainhead MTB Trail Status</title>
+ <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"></link>
+ </head>
+
+ <body>
+  <div class="container">
+   <div class="title">Fountainhead MTB Trails</div>
+   <div class="status {{ call.status }}">{{ call.status.upper() }}</div>
+   <audio src="{{ call.recording_url }}" controls=""></audio>
+   <div class="date">Last updated: {{ call.date.astimezone(timezone).strftime('%m/%d/%Y %I:%M%p') }}</div>
+   <p class="transcript">{{ call.transcript }}</p>
+  </div>
+  <div class="footer">
+   <a href="https://github.com/dschep/fh-status" target="_blank">
+    About/Github/Feedback
+   </a>
+   |
+   <a href="{{ url_for('json') }}" target="_blank">
+    JSON
+   </a>
+  </div>
+ </body>
+</html> 

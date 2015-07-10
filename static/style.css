@@ -1,0 +1,52 @@
+html {height: 100%;}
+body {
+    display: flex;
+    min-height: 100%;
+    flex-direction: column;
+    font-family: sans;
+    text-align: center;
+    margin: 0;
+}
+
+.container {
+    max-width: 500px;
+    margin: 20px auto;
+    flex: 1;
+}
+
+.title {
+    font-size: 2em;
+    font-weight: bold;
+    margin: 20px 0;
+}
+
+.status {
+    font-size: 5em;
+    font-weight: bold;
+    margin: 20px 0;
+}
+.status.open {
+    background: green;
+}
+.status.closed {
+    background: red;
+}
+.status.unknown {
+    background: orange;
+}
+
+.date {
+    font-size: .85em;
+    font-weight: bold;
+    margin: 20px 0;
+}
+
+p {
+    font-size: .75em;
+    font-weight: light;
+    margin: 20px 0;
+}
+
+.footer {
+    margin: 10px;
+}

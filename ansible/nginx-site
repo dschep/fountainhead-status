@@ -1,0 +1,9 @@
+server {
+    server_name {{ hostname }};
+
+    keepalive_timeout 5;
+
+    location / {
+        proxy_pass http://localhost:{{ bind_port }}/;
+    }
+}

@@ -8,12 +8,12 @@ from pytz import timezone
 from twilio.rest import TwilioRestClient
 
 def envtuple(key, **opts):
-    if 'default' in opts:
-        val = os.environ.get(key, opts['default'])
+    if key in os.environ:
+        return (key, opts.get('convert', lambda x: x)(os.environ[key]))
+    elif 'default' in opts:
+        return (key, opts['default'])
     else:
-        val = os.environ[key]
-    convert = opts.get('convert', lambda x: x)
-    return (key, convert(val))
+        raise KeyError('{} not in os.environ'.format(key))
 
 
 app = Flask(__name__)

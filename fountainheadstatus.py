@@ -1,5 +1,5 @@
+import os
 from datetime import datetime
-from os import environ as env
 from sys import argv
 
 from flask import Flask, request, render_template, jsonify
@@ -7,12 +7,27 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from pytz import timezone
 from twilio.rest import TwilioRestClient
 
+def envtuple(key, **opts):
+    if 'default' in opts:
+        val = os.environ.get(key, opts['default'])
+    else:
+        val = os.environ[key]
+    convert = opts.get('convert', lambda x: x)
+    return (key, convert(val))
+
 
 app = Flask(__name__)
 app.debug = True
-app.config['SQLALCHEMY_DATABASE_URI'] = env['DB_URL']
+app.config.update(dict([
+    envtuple('DEBUG', convert=lambda x: x.lower() == 'true'),
+    envtuple('SQLALCHEMY_DATABASE_URI'),
+    envtuple('ACCOUNT_SID'),
+    envtuple('AUTH_TOKEN'),
+    envtuple('SERVER_URL'),
+    envtuple('FROM'),
+]))
 db = SQLAlchemy(app)
-client = TwilioRestClient(env['ACCOUNT_SID'], env['AUTH_TOKEN'])
+client = TwilioRestClient(app.config['ACCOUNT_SID'], app.config['AUTH_TOKEN'])
 
 
 class Call(db.Model):
@@ -69,7 +84,7 @@ def callback():
 <Response>
     <Record timeout="60" transcribeCallback="{}"/>
 </Response>
-""".format(env['SERVER_URL'] + '/twilio/transcription-callback')
+""".format(app.config['SERVER_URL'] + '/twilio/transcription-callback')
 
 
 @app.route('/twilio/transcription-callback', methods=['POST'])
@@ -87,9 +102,9 @@ if len(argv) >= 2:
         db.create_all()
     elif argv[1] == 'update':
         call = client.calls.create(
-            url=env['SERVER_URL'] + '/twilio/callback',
+            url=app.config['SERVER_URL'] + '/twilio/callback',
             to='+17032509124',
-            from_=env['FROM'],
+            from_=app.config['FROM'],
             send_digits='w1',
             record=True,
         )

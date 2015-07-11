@@ -27,7 +27,7 @@
         links:
           - fountainheadstatus-db:db
         env:
-          DB_URL: postgresql+psycopg2://postgres@db/
+          SQLALCHEMY_DATABASE_URI: "{{ SQLALCHEMY_DATABASE_URI }}"
           ACCOUNT_SID: "{{ ACCOUNT_SID }}"
           AUTH_TOKEN: "{{ AUTH_TOKEN }}"
           FROM: "{{ FROM }}"

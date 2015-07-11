@@ -19,7 +19,7 @@ def envtuple(key, **opts):
 app = Flask(__name__)
 app.debug = True
 app.config.update(dict([
-    envtuple('DEBUG', convert=lambda x: x.lower() == 'true'),
+    envtuple('DEBUG', convert=lambda x: x.lower() == 'true', default=False),
     envtuple('SQLALCHEMY_DATABASE_URI'),
     envtuple('ACCOUNT_SID'),
     envtuple('AUTH_TOKEN'),

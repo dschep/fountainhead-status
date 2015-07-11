@@ -7,6 +7,8 @@
     hostname: fountainhead-stat.us
     bind_port: 5000
   tasks:
+    - include_vars: vars.yml
+    - include_vars: secrets.yml
     - name: db container
       docker:
         name: fountainheadstatus-db
@@ -26,22 +28,19 @@
           - fountainheadstatus-db:db
         env:
           DB_URL: postgresql+psycopg2://postgres@db/
-          ACCOUNT_SID: "{{ lookup('env', 'ACCOUNT_SID') }}"
-          AUTH_TOKEN: "{{ lookup('env', 'AUTH_TOKEN') }}"
-          FROM: "{{ lookup('env', 'FROM') }}"
-          SERVER_URL: "{{ lookup('env', 'SERVER_URL') }}"
+          ACCOUNT_SID: "{{ ACCOUNT_SID }}"
+          AUTH_TOKEN: "{{ AUTH_TOKEN }}"
+          FROM: "{{ FROM }}"
+          SERVER_URL: "{{ SERVER_URL }}"
     - name: install nginx
       apt: pkg=nginx state=present
     - name: copy nginx site
       template: src=nginx-site dest=/etc/nginx/sites-enabled/fountainheadstatus
       notify:
         - restart nginx
-    - name: create update script
-      template: src=update-status dest=/usr/bin/update-fountainheadstatus
-                mode=777
     - name: crontab to update status
       cron: name="update Fountainhead status" minute="0" hour="*/2"
-            job="/usr/bin/update-fountainheadstatus"
+            job="docker exec fountainheadstatus-web python fountainheadstatus.py update"
   handlers:
     - name: restart nginx
       service: name=nginx state=restarted

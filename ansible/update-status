@@ -1,8 +1,0 @@
-#!/bin/bash
-docker run \
-    -e DB_URL=postgresql+psycopg2://postgres@db/ \
-    -e ACCOUNT_SID={{ lookup('env', 'ACCOUNT_SID') }} \
-    -e AUTH_TOKEN={{ lookup('env', 'AUTH_TOKEN') }} \
-    -e FROM={{ lookup('env', 'FROM') }} \
-    -e SERVER_URL={{ lookup('env', 'SERVER_URL') }} \
-    dschep/fountainheadstatus python fountainheadstatus.py update

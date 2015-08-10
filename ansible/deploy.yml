@@ -2,7 +2,7 @@
 - hosts: all
   sudo: yes
   roles:
-    - angstwad.docker_ubuntu
+    - { role: angstwad.docker_ubuntu, pip_version_docker_py: 1.2.3 }
   vars:
     hostname: fountainhead-stat.us
     bind_port: 5000

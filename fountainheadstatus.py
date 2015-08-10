@@ -21,13 +21,13 @@ app.debug = True
 app.config.update(dict([
     envtuple('DEBUG', convert=lambda x: x.lower() == 'true', default=False),
     envtuple('SQLALCHEMY_DATABASE_URI'),
-    envtuple('ACCOUNT_SID'),
-    envtuple('AUTH_TOKEN'),
+    envtuple('TWILIO_ACCOUNT_SID'),
+    envtuple('TWILIO_AUTH_TOKEN'),
     envtuple('SERVER_URL'),
-    envtuple('FROM'),
+    envtuple('TWILIO_FROM'),
 ]))
 db = SQLAlchemy(app)
-client = TwilioRestClient(app.config['ACCOUNT_SID'], app.config['AUTH_TOKEN'])
+client = TwilioRestClient(app.config['TWILIO_ACCOUNT_SID'], app.config['TWILIO_AUTH_TOKEN'])
 
 
 class Call(db.Model):
@@ -90,7 +90,7 @@ def update():
     call = client.calls.create(
         url=app.config['SERVER_URL'] + '/twilio/callback',
         to='+17032509124',
-        from_=app.config['FROM'],
+        from_=app.config['TWILIO_FROM'],
         send_digits='w1',
         record=True,
     )

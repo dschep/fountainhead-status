@@ -1,10 +1,11 @@
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from sys import argv
 
+import requests
 from flask import Flask, request, render_template, jsonify
 from flask.ext.sqlalchemy import SQLAlchemy
-from pytz import timezone
+from pytz import timezone, utc
 from twilio.rest import TwilioRestClient
 
 def envtuple(key, **opts):
@@ -25,6 +26,7 @@ app.config.update(dict([
     envtuple('TWILIO_AUTH_TOKEN'),
     envtuple('SERVER_URL'),
     envtuple('TWILIO_FROM'),
+    envtuple('FACEBOOK_ACCESS_TOKEN'),
 ]))
 db = SQLAlchemy(app)
 client = TwilioRestClient(app.config['TWILIO_ACCOUNT_SID'], app.config['TWILIO_AUTH_TOKEN'])
@@ -86,7 +88,43 @@ def callback():
 </Response>
 """.format(app.config['SERVER_URL'] + '/twilio/transcription-callback')
 
+
+def update_from_facebook():
+    resp = requests.get('https://graph.facebook.com/207150099413259/feed',
+                        params={'access_token':
+                                app.config['FACEBOOK_ACCESS_TOKEN']})
+    if 200 <= resp.status_code < 400:
+        posts = resp.json()['data']
+        while posts:
+            latest_post = posts.pop(0)
+            if 'open' in latest_post['message'].lower() or 'close' in latest_post['message'].lower():
+                break
+        latest_post['created_time'] = utc.localize(datetime.strptime(
+            latest_post['created_time'], '%Y-%m-%dT%H:%M:%S+0000'))
+    else:
+        return False
+
+    latest_db_record = Call.query.order_by(Call.date.desc()).first()
+    if latest_db_record and latest_post['id'] == latest_db_record.id:
+        utcnow = utc.localize(datetime.utcnow())
+        since_update = utcnow - latest_db_record.date
+        eastern_hr = utcnow.astimezone(timezone('US/Eastern')).hour
+        if 9 <= eastern_hr < 18:
+            # 12 hr grace period if after 9AM, but before usual closing time
+            return since_update < timedelta(hours=12)
+        else:
+            # 24 hr grace period if before 9AM (or after closing)
+            return since_update < timedelta(hours=24)
+    db.session.add(Call(id=latest_post['id'],
+                        recording_url='https://facebook.com/' + latest_post['id'],
+                        transcript=latest_post['message'],
+                        date=latest_post['created_time']))
+    db.session.commit()
+    return True
+
 def update():
+    if update_from_facebook():
+        return
     call = client.calls.create(
         url=app.config['SERVER_URL'] + '/twilio/callback',
         to='+17032509124',

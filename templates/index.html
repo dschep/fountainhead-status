@@ -10,7 +10,11 @@
   <div class="container">
    <div class="title">Fountainhead MTB Trails</div>
    <div class="status {{ call.status }}">{{ call.status.upper() }}</div>
-   <audio src="{{ call.recording_url }}" controls=""></audio>
+   {% if 'twilio.com' in call.recording_url %}
+    <audio src="{{ call.recording_url }}" controls=""></audio>
+   {% else %}
+    <a href="{{ call.recording_url}}" target="_blank">Source</a>
+   {% endif %}
    <div class="date">Last updated: {{ call.date.astimezone(timezone).strftime('%m/%d/%Y %I:%M%p') }}</div>
    <p class="transcript">{{ call.transcript }}</p>
    <p>

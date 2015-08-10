@@ -105,7 +105,7 @@ def update_from_facebook():
         return False
 
     latest_db_record = Call.query.order_by(Call.date.desc()).first()
-    if latest_db_record.date > latest_post['date']:
+    if latest_db_record.date > latest_post['created_time']:
         return False
     if latest_db_record and latest_post['id'] == latest_db_record.id:
         utcnow = utc.localize(datetime.utcnow())

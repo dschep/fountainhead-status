@@ -28,10 +28,11 @@
           - fountainheadstatus-db:db
         env:
           SQLALCHEMY_DATABASE_URI: "{{ SQLALCHEMY_DATABASE_URI }}"
-          ACCOUNT_SID: "{{ ACCOUNT_SID }}"
-          AUTH_TOKEN: "{{ AUTH_TOKEN }}"
-          FROM: "{{ FROM }}"
+          TWILIO_ACCOUNT_SID: "{{ TWILIO_ACCOUNT_SID }}"
+          TWILIO_AUTH_TOKEN: "{{ TWILIO_AUTH_TOKEN }}"
+          TWILIO_FROM: "{{ TWILIO_FROM }}"
           SERVER_URL: "{{ SERVER_URL }}"
+          FACEBOOK_ACCESS_TOKEN: "{{ FACEBOOK_ACCESS_TOKEN }}"
     - name: install nginx
       apt: pkg=nginx state=present
     - name: copy nginx site

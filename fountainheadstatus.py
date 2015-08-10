@@ -86,6 +86,16 @@ def callback():
 </Response>
 """.format(app.config['SERVER_URL'] + '/twilio/transcription-callback')
 
+def update():
+    call = client.calls.create(
+        url=app.config['SERVER_URL'] + '/twilio/callback',
+        to='+17032509124',
+        from_=app.config['FROM'],
+        send_digits='w1',
+        record=True,
+    )
+    print(call.sid)
+
 
 @app.route('/twilio/transcription-callback', methods=['POST'])
 def transcription_callback():
@@ -101,11 +111,4 @@ if len(argv) >= 2:
     elif argv[1] == 'createdb':
         db.create_all()
     elif argv[1] == 'update':
-        call = client.calls.create(
-            url=app.config['SERVER_URL'] + '/twilio/callback',
-            to='+17032509124',
-            from_=app.config['FROM'],
-            send_digits='w1',
-            record=True,
-        )
-        print(call.sid)
+        update()
